@@ -1,11 +1,14 @@
 # ComfyUI_deepDeband
 ComyUI wrapper for RaymondLZhou/deepDeband image and video debanding
 
+
 <hr>
 WARNING: thit is an experimental development repo, you have to expect bugs, not to be used in a production environment.
 <hr>
 
 ## Notes
+When the repo is downloaded the model are automatically downloaded via GIT LFS, this should require ~~ 300 MB of storage.
+
 The default implementation of deepDeband uses the following functions:
 ```
 cleanup.cleanup() # delete precedent ./temp/*
@@ -15,6 +18,8 @@ deband.deband_images(...) # load images from ./temp, deband, save to ./output
 cleanup.cleanup() # delete precedent ./temp/*
 ```
 this method pipes all images through disk read/write which is good for low ram envs but impacts inference time negatively.
+
+the deband process is calling a bash script, so at the moment such stage still requires to write the image (at least this happens only once per image now insted of 3 times)
 
 Our patch transforms this behavior into a RAM-based pipeline.
 

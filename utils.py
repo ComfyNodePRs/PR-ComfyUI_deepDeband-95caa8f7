@@ -1,19 +1,12 @@
 import gc
 import torch
+from PIL import Image
 
-def clearCache(self):
-    mm.soft_empty_cache()
-    if self.transformer:
-        self.transformer.cpu()
-        del self.transformer
-    if self.tokenizer:
-        del self.tokenizer
-    torch.cuda.empty_cache()
-    torch.cuda.synchronize()
-    torch._C._cuda_clearCublasWorkspaces()
-    gc.collect()
-    self.tokenizer = None
-    self.transformer = None
-    self.model_name = None
-    self.precision = None
-    self.quantization = None
+
+def imgarg2PIL(image):
+    """return RGB Pillow Image object from ComfyUI image node argument"""
+    return Image.fromarray(np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)).convert("RGB")   
+
+
+def PIL2imgarg(img):
+    return torch.clamp(torch.from_numpy(np.array(img)), min=0, max=1.0)
