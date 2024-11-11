@@ -1,0 +1,14 @@
+[project]
+name = "comfyui_deepdeband"
+description = "ComyUI wrapper for RaymondLZhou/deepDeband image and video debanding"
+version = "0.0.1"
+license = {file = "LICENSE.md"}
+
+[project.urls]
+Repository = "https://github.com/Anze-/ComfyUI_deepDeband"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI_deepDeband"
+Icon = ""
