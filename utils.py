@@ -1,12 +1,14 @@
 import gc
 import torch
+import numpy as np
 from PIL import Image
 
 
-def imgarg2PIL(image):
+def imgbatch2PIL(batch):
     """return RGB Pillow Image object from ComfyUI image node argument"""
-    return Image.fromarray(np.clip(255.0 * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8)).convert("RGB")   
+    # note: image from VHS Load Video has shape [frames, h, w, bgr] (bgr? or rgb?)
+    return [Image.fromarray(np.clip(frame.cpu().numpy(),0, 255).astype(np.uint8)) for frame in batch]
 
-
-def PIL2imgarg(img):
-    return torch.clamp(torch.from_numpy(np.array(img)), min=0, max=1.0)
+def PIL2imgbatch(batch):
+    import pdb; pdb.set_trace()
+    return torch.tensor([torch.clamp(torch.from_numpy(np.array(img)), min=0, max=1.0) for img in batch])

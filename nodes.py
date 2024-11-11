@@ -1,18 +1,14 @@
 # Imports:
-import os, sys
+import os, sys, gc
 import logging
-#import comfy.model_management as mm
-
-# add ComfyUI_deepDeband to path
-#sys.path.insert(0,'custom_nodes/ComfyUI_deepDeband/')
+import comfy.model_management as mm
 
 import numpy as np
 from PIL import Image
 
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
-from .utils import imgarg2PIL, PIL2imgarg
+from .utils import imgbatch2PIL, PIL2imgbatch
 from .wrappers import pad_image, deband_image_full
 
 # Logging configuration:
@@ -26,7 +22,7 @@ class deepDebandInference:
     def INPUT_TYPES(s):
         return {
         "required": {
-            "image": ("IMAGE", {"tooltip": "Provide an image to be debanded"}),
+            "img_batch": ("IMAGE", {"tooltip": "Provide an image to be debanded"}),
             #"version": (["full", "weighted"], {"default": "weighted", "tooltip": "Choose the debanding model version. Please refer to the original paper"}),
         },
         "optional": {
@@ -36,11 +32,11 @@ class deepDebandInference:
 
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("debanded_image",)
-    FUNCTION = "infer"
+    FUNCTION = "infer_batch"
     CATEGORY = "debanding"
 
-    def infer(self, 
-              image, 
+    def infer_batch(self, 
+              img_batch, 
               #version, 
               unload_model=True,
               ):
@@ -49,20 +45,29 @@ class deepDebandInference:
         mm.soft_empty_cache()
 
         # Get image from ComfyUI
-        image = imgarg2PIL(image)
+        pil_batch = imgbatch2PIL(img_batch)
 
+        debanded = []
+        for i,image in enumerate(pil_batch):
+            debanded.append(self.deband_image(image))
+            #TODO: add option to clear cache every n images
+        
+        return (PIL2imgbatch(debanded),)
+        
+
+
+    def deband_image(self,image):
         # Pad image
-        padded_image, original_size = pad_image(img_path, self.image_sizes)
+        padded_image, original_size = pad_image(image)
 
         if True: #version == "full":
-            debanded_image = deband_image_full(img, original_size)
+            debanded_image = deband_image_full(padded_image, original_size)
         elif version == "weighted":
             pass
             # implement equivalent of:
             # deband_weighted.deband_images(image_sizes, gpu_ids)
 
-        return (PIL2imgarg(debanded_image),)
-
+        return debanded_image
 
     #needs to be adapted to my class
     def clearCache(self):

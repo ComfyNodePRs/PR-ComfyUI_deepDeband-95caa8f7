@@ -1,8 +1,14 @@
-import shutil
-from PIL import Image
+import shutil, os
+from PIL import Image, ImageOps
+from .deepDeband.src.padding import new_dimentions
+
+root_path=os.getcwd()+"/custom_nodes/ComfyUI_deepDeband/"
+
+tempdir_in="temp/in/"
+tempdir_out="temp/out/"
+modeldir="deepDeband/pytorch-CycleGAN-and-pix2pix/"
 
 def pad_image(img):
-    img = Image.open(img_path)
     width, height = img.size
     new_width, new_height = new_dimentions(width, height)
 
@@ -23,28 +29,28 @@ def pad_image(img):
 
 
 def deband_image_full(img, original_size, gpu_ids=0):
-    os.makedirs("temp/in/", exist_ok=True)
-    os.makedirs("temp/out/", exist_ok=True)
+    os.makedirs(root_path+tempdir_in, exist_ok=True)
+    os.makedirs(root_path+tempdir_out, exist_ok=True)
     dim = max(img.size) # get padded image size
-    img.save("temp/in/img.png", "PNG") # dump temp image
+    img.save(root_path+tempdir_in+"img.png", "PNG") # dump temp image
 
     # run inference
-    os.chdir('deepDeband/pytorch-CycleGAN-and-pix2pix')
+    os.chdir(root_path+modeldir)
     command = f'python test.py --name deepDeband-f --model test --netG unet_256 --norm batch \
-        --dataroot ../../temp/in --results_dir ../../temp/out \
+        --dataroot ../../{tempdir_in} --results_dir ../../{tempdir_out} \
         --dataset_mode single --gpu_ids {gpu_ids} --preprocess none --crop_size {dim} --load_size {dim}'
 
 
     os.system(command)
     # go back to the root
-    os.chdir('../..')
+    os.chdir(root_path)
     
     #load back image and crop
-    img = Image.open('temp/out/img.png')
+    img = Image.open(root_path+tempdir_out+'img.png')
     img = img.crop((0, 0, original_size[0], original_size[1]))
 
     #delete tempfiles...
-    os.remove("temp/in/img.png")
-    os.remove("temp/out/img.png")
+    os.remove(root_path+tempdir_in+"img.png")
+    os.remove(root_path+tempdir_out+"img.png")
 
     return img
