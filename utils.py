@@ -22,6 +22,7 @@ def PIL2imgbatch(pil_batch,progress=None):
 
 import asyncio
 
+#TODO: improve this function! The progress bar is NOT updated smoothly this way
 # Function to run the command and process its output
 async def run_async_callback(cmd, callback):
     """Run an async command of the type:

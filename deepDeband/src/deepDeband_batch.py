@@ -1,6 +1,7 @@
 import cleanup
-import deband_full_batch
 import padding
+import deband_full_batch
+
 
 if __name__ == '__main__':
     image_sizes = {}

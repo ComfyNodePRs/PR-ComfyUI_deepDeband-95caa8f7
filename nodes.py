@@ -28,11 +28,6 @@ class deepDebandInference:
         return {
         "required": {
             "img_batch": ("IMAGE", {"tooltip": "Provide an image to be debanded"}),
-            "width": ("INT", {"tooltip": "Video frames width"}),
-            #"version": (["full", "weighted"], {"default": "weighted", "tooltip": "Choose the debanding model version. Please refer to the original paper"}),
-        },
-        "optional": {
-            "unload_model": ("BOOLEAN", {"default": True, "tooltip": "Unload the model after use to free up memory"}),
         }
         }
 
@@ -41,12 +36,7 @@ class deepDebandInference:
     FUNCTION = "infer_batch"
     CATEGORY = "debanding"
 
-    def infer_batch(self, 
-              img_batch,
-              width, 
-              #version, 
-              unload_model=True,
-              ):
+    def infer_batch(self, img_batch ):
         # Empty cache
         mm.soft_empty_cache()
 

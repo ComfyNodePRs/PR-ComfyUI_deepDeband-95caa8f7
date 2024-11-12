@@ -1,6 +1,6 @@
 import os
 from glob import glob
-from PIL import Image, ImageOps
+from PIL import Image
 
 from .utils import imgbatch2PIL, PIL2imgbatch, run_async_callback
 
