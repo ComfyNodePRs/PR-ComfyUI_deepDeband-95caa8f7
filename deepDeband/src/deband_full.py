@@ -35,3 +35,16 @@ def deband_images(image_sizes, gpu_ids):
     for file in os.listdir('temp/deepDeband-f/debanded/deepDeband-f/test_latest/images'):
         if file.endswith('_fake.png'):
             process_image(file, image_sizes[file[:-9]+'.png'])
+
+
+
+
+
+
+def deband_images_new(image_sizes, gpu_ids):
+    for file in os.listdir('temp/deepDeband-f/padded'):
+        deband_image(file, gpu_ids)
+
+    for file in os.listdir('temp/deepDeband-f/debanded/deepDeband-f/test_latest/images'):
+        if file.endswith('_fake.png'):
+            process_image(file, image_sizes[file[:-9]+'.png'])
