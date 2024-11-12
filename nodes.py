@@ -1,5 +1,5 @@
 # Imports:
-import os, sys, gc
+import os
 import logging
 import comfy.model_management as mm
 from comfy.utils import ProgressBar
@@ -7,11 +7,6 @@ from comfy.utils import ProgressBar
 import numpy as np
 from PIL import Image
 
-import torch
-from torchvision.transforms import Pad
-
-#from .utils import imgbatch2PIL, PIL2imgbatch
-#from .wrappers import pad_image, deband_image_full, deband_batch, new_dimentions
 from .wrappers import comfy2images, run_inference, load_images
 
 # Logging configuration:
@@ -72,74 +67,3 @@ class deepDebandInference:
         out = load_images(pbar)
 
         return (out,)
-
-
-    #     # Get image from ComfyUI
-    #     pil_batch = imgbatch2PIL(img_batch)
-
-    #     batch_process = True
-    #     if batch_process:
-    #         out = self.run_deband_batch(pil_batch)
-    #         return (out,)
-    #     else: #serial processing is very slow, loads and unloads the model for each img inference
-    #         debanded = []
-    #         pbar = ProgressBar(len(pil_batch))
-    #         for i,image in enumerate(pil_batch):
-    #             debanded.append(self.deband_image(image))
-    #             #TODO: add option to clear cache every n images
-    #             pbar.update(1)
-        
-    #     return (PIL2imgbatch(debanded),)
-        
-
-
-    # def deband_image(self,image):
-    #     # Pad image
-    #     padded_image, original_size = pad_image(image)
-    #     debanded_image = deband_image_full(padded_image, original_size)
-
-    #     return debanded_image
-
-    # def run_deband_batch(self,pil_batch):
-    #     # pad frames to squares
-    #     ww,hh = pil_batch[0].size
-    #     nw,nh = new_dimentions(ww,hh)
-    #     dim = max([ww,hh])
-    #     if ww>hh: # pad height
-    #         pad_f = Pad([0,0,256,ww-hh+256], padding_mode='reflect')
-    #     else: # pad width
-    #         pad_f = Pad([0,0,hh-ww+256,256], padding_mode='reflect')
-        
-    #     pbar = ProgressBar(len(pil_batch)*3)
-        
-    #     #enlarging not enough, need multiple
-    #     padded_batch = [pad_f(img) for img in pil_batch]
-        
-        
-
-    #     out_pil_batch = deband_batch(padded_batch, dim) #,original_sizes,new_dims)
-    #     pbar.update(len(pil_batch))
-
-    #     cropped = [img.crop([0,0,ww,hh]) for img in out_pil_batch]
-
-    #     return PIL2imgbatch(cropped,pbar)
-
-        
-
-    # #needs to be adapted to my class
-    # def clearCache(self):
-    #     mm.soft_empty_cache()
-    #     if self.transformer:
-    #         self.transformer.cpu()
-    #         del self.transformer
-    #     if self.tokenizer:
-    #         del self.tokenizer
-    #     torch.cuda.empty_cache()
-    #     torch.cuda.synchronize()
-    #     torch._C._cuda_clearCublasWorkspaces()
-    #     gc.collect()
-    #     self.tokenizer = None
-    #     self.transformer = None
-    #     self.model_name = None
-    #     self.precision = None
-    #     self.quantization = None
